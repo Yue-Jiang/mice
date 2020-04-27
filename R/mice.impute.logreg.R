@@ -63,12 +63,12 @@ mice.impute.logreg <- function(y, ry, x, wy = NULL, ...) {
   fit <- eval(expr)
   fit.sum <- summary.glm(fit)
   beta <- coef(fit)
-  beta <- beta[seq_len(fit$rank)]
+  mask <- is.na(beta)
   rv <- t(chol(sym(fit.sum$cov.unscaled)))
-  beta.star <- beta + rv %*% rnorm(ncol(rv))
+  beta.star <- beta[!mask] + rv %*% rnorm(ncol(rv))
   
   # draw imputations
-  p <- 1/(1 + exp(-(x[wy, , drop = FALSE] %*% beta.star)))
+  p <- 1/(1 + exp(-(x[wy, !mask, drop = FALSE] %*% beta.star)))
   vec <- (runif(nrow(p)) <= p)
   vec[vec] <- 1
   if (is.factor(y)) {
