@@ -63,6 +63,7 @@ mice.impute.logreg <- function(y, ry, x, wy = NULL, ...) {
   fit <- eval(expr)
   fit.sum <- summary.glm(fit)
   beta <- coef(fit)
+  beta <- beta[seq_len(fit$rank)]
   rv <- t(chol(sym(fit.sum$cov.unscaled)))
   beta.star <- beta + rv %*% rnorm(ncol(rv))
   
